@@ -84,6 +84,27 @@ public class AccountController {
         return result;
     }
 
+    @RequestMapping(value = "/deepUnBindedALLGate", method = RequestMethod.POST)
+    public String deepUnBindedALLGate(@RequestBody JSONObject message){
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(JSON, message.toJSONString());
+        Request request = new Request.Builder()
+                .url(BASEURL + "deepUnBindedALLGate")
+                .post(body)
+                .build();
+        String result = new String();
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                result = response.body().string();
+                System.out.println(result);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     @RequestMapping(value = "/unBindedGate", method = RequestMethod.POST)
     @ResponseBody
     public String unBindedGate(@RequestBody JSONObject message){
