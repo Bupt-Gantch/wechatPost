@@ -18,7 +18,8 @@ import java.io.IOException;
 @RequestMapping("/api/v1/deviceaccess")
 public class DeviceAccessController {
 
-    private static String BASEURL = "http://47.105.120.203:30080/api/v1/deviceaccess/";
+//    private static String BASEURL = "http://47.105.120.203:30080/api/v1/deviceaccess/";
+    private static String BASEURL = "http://localhost:8100/api/v1/deviceaccess/";
 
     private static OkHttpClient client = new OkHttpClient();
 
@@ -468,6 +469,27 @@ public class DeviceAccessController {
                 System.out.println(result);
             }
         } catch (IOException e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/removeGateway/{customerId}", method = RequestMethod.GET)
+    public String  removeGateway(@PathVariable("customerId") Integer customerId, @RequestParam String gateway_name){
+        String UrlSuffix = "removeGateway/" + customerId;
+        String param = "?gateway_name=" + gateway_name;
+        Request request = new Request.Builder()
+                .url(BASEURL + UrlSuffix + param)
+                .get()
+                .build();
+        String result = new String();
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                result = "succeed";
+            }
+        } catch (IOException e){
+            result ="fail";
             e.printStackTrace();
         }
         return result;
