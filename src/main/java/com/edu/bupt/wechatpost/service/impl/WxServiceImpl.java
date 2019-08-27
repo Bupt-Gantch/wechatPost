@@ -8,12 +8,10 @@ import com.edu.bupt.wechatpost.dao.MomentTipMapper;
 import com.edu.bupt.wechatpost.dao.PostCommentMapper;
 import com.edu.bupt.wechatpost.model.*;
 import com.edu.bupt.wechatpost.service.WxService;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +37,14 @@ public class WxServiceImpl implements WxService{
     @Autowired
     private PostCommentMapper postCommentMapper;
 
+    // 小程序管理后台开发者配置参数
+//    final String appid = "wx9e12afc5dec75b6f";
+    final String appid = "wx9e12afc5dec75b6e";
+    final String secret = "d0d7b3d2ab48530710a4828003dd1c05";
+
+    String access_token = "";
+    long expires_in = 0L;
+
     private okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
 
     private static ResultCallBack defaultResultCallback = new ResultCallBack() {
@@ -48,6 +55,80 @@ public class WxServiceImpl implements WxService{
         }
     };
 
+    public String getAccessToken() {
+        Date now = new Date();
+        if (!this.access_token.equals("") && this.expires_in != 0 && now.getTime() - this.expires_in < 7000) {
+            return this.access_token;
+        }
+
+        // 第一次申请 access_token 或已失效
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
+        url = url.replace("APPID", appid).replace("APPSECRET", secret);
+
+        try {
+            String res = GET(url);
+            JSONObject data = JSONObject.parseObject(res);
+            if (data != null) { // 请求成功
+                this.access_token =  data.getString("access_token");
+                this.expires_in = data.getLong("expires_in");
+                return this.access_token;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean imgSecCheck (String accessToken, MultipartFile image) {
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        JSONObject data = new JSONObject();
+        data.put("media", image);
+
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(JSON, data.toJSONString());
+        Request request = new Request.Builder()
+                .url("https://api.weixin.qq.com/wxa/img_sec_check?access_token=" + accessToken)
+                .post(body)
+                .build();
+        try{
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()){
+                JSONObject res = JSONObject.parseObject(response.body().string());
+                if(res.getInteger("errcode") == 0) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean msgSecCheck(String accessToken, String content) {
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        JSONObject data = new JSONObject();
+        data.put("content", content);
+
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.RequestBody body = okhttp3.RequestBody.create(JSON, data.toJSONString());
+        Request request = new Request.Builder()
+                .url(" https://api.weixin.qq.com/wxa/msg_sec_check?access_token=" + accessToken)
+                .post(body)
+                .build();
+        try{
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()){
+                JSONObject res = JSONObject.parseObject(response.body().string());
+                if(res.getInteger("errcode") == 0) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     /**
      * 向微信服务器申请 openid，并根据unionid建立小程序和公众号对应表
@@ -56,10 +137,6 @@ public class WxServiceImpl implements WxService{
      */
     public String getOpenId(JSONObject message) {
         final String JSCODE = message.getString("JSCODE");
-
-        // 小程序管理后台开发者配置参数
-        final String appid = "wx9e12afc5dec75b6f";
-        final String secret = "d0d7b3d2ab48530710a4828003dd1c05";
 
         String unionid = null;
         String returnvalue = "";
@@ -107,12 +184,6 @@ public class WxServiceImpl implements WxService{
                         }
                     };
                     ExecuteAsyn(request, callback);
-//                    try {
-//                        okhttp3.Response res = client.newCall(request).execute();
-//                    } catch (IOException e) {
-//                        System.out.println("公众号更新关注用户失败");
-//                        e.printStackTrace();
-//                    }
 
                 } else {  // 数据库存在该记录
                     // 小程序 openid 为空则插入
@@ -133,12 +204,6 @@ public class WxServiceImpl implements WxService{
                             }
                         };
                         ExecuteAsyn(request, callback);
-//                        try {
-//                            okhttp3.Response res = client.newCall(request).execute();
-//                        } catch (IOException e) {
-//                            System.out.println("公众号更新关注用户失败");
-//                            e.printStackTrace();
-//                        }
                     }
                 }
             }

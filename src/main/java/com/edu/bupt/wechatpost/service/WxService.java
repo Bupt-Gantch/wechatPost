@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.edu.bupt.wechatpost.model.LikeRelation;
 import okhttp3.Request;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface WxService {
     String getOpenId(JSONObject message);
@@ -23,4 +24,8 @@ public interface WxService {
     interface ResultCallBack{
         void onCallBack(String result);
     }
+
+    String getAccessToken();
+    boolean imgSecCheck (String accessToken, MultipartFile image);
+    boolean msgSecCheck (String accessToken, String content);
 }

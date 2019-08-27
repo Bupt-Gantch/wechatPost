@@ -8,6 +8,9 @@ import com.edu.bupt.wechatpost.model.Post;
 import com.edu.bupt.wechatpost.service.DataService;
 import com.edu.bupt.wechatpost.service.PostCommentService;
 import com.edu.bupt.wechatpost.service.WxService;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +98,13 @@ public class WechatPostController {
         String nickName = message.getString("nickName");
         String avatar = message.getString("avatar");
         String content = message.getString("content");
+
+        // check for content if its illeagle
+        String accessToken = wxService.getAccessToken();
+        if (!wxService.msgSecCheck(accessToken, content)) {
+             return 0;
+        }
+
         String location = message.getString("location");
         String images = message.getString("images");
         java.text.DateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -126,6 +136,13 @@ public class WechatPostController {
                                @RequestParam(value = "location") String location
                                ){
         logger.info("发布消息...");
+
+        // check for content and image if its illeagle
+        String accessToken = wxService.getAccessToken();
+        if (!wxService.imgSecCheck(accessToken, image) || !wxService.msgSecCheck(accessToken, content)){
+            return 0;
+        }
+
         java.text.DateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm");
         String s = format.format(new Date());
         if(openId != null){
@@ -223,6 +240,12 @@ public class WechatPostController {
         Integer pId = message.getInteger("pId");
         String nickName = message.getString("nickName");
         String cContent = message.getString("cContent");
+        // check for content if its illeagle
+        String accessToken = wxService.getAccessToken();
+        if (!wxService.msgSecCheck(accessToken, cContent)) {
+            return 0;
+        }
+
         String touser = "";
         String avator = message.getString("avator");
         try{
