@@ -16,13 +16,11 @@ public class DataServiceImpl implements DataService {
     private static final Logger logger = LoggerFactory.getLogger(DataServiceImpl.class);
 
     private final String serverIp = "https://smart.gantch.cn/"; // ip域名（端口号）
-//    private final String serverIp = "https://47.104.8.164:80/"; // 服务器ip域名（端口号）
-//    private final String serverIp = "http://656a37cc.ngrok.io/"; // 本地（端口号）
     private final String downloadInterface = "api/v1/wechatPost/download?";
     private final String imageBasePath = System.getProperty("user.dir").replace("\\","/")+"/image/";
 
     @Override
-    public String uploadImage(MultipartFile image) throws IOException {
+    public String uploadImage(MultipartFile image) {
         logger.info("正在上传图片...");
         String imageName = "";
         if(image != null){

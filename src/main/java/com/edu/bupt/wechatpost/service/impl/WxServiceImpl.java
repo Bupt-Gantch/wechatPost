@@ -38,8 +38,7 @@ public class WxServiceImpl implements WxService{
     private PostCommentMapper postCommentMapper;
 
     // 小程序管理后台开发者配置参数
-//    final String appid = "wx9e12afc5dec75b6f";
-    final String appid = "wx9e12afc5dec75b6e";
+    final String appid = "wx9e12afc5dec75b6f";
     final String secret = "d0d7b3d2ab48530710a4828003dd1c05";
 
     String access_token = "";

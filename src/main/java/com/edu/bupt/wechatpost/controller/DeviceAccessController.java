@@ -18,8 +18,7 @@ import java.io.IOException;
 @RequestMapping("/api/v1/deviceaccess")
 public class DeviceAccessController {
 
-//    private static String BASEURL = "http://47.105.120.203:30080/api/v1/deviceaccess/";
-    private static String BASEURL = "http://localhost:8100/api/v1/deviceaccess/";
+    private static String BASEURL = "http://47.105.120.203:30080/api/v1/deviceaccess/";
 
     private static OkHttpClient client = new OkHttpClient();
 
