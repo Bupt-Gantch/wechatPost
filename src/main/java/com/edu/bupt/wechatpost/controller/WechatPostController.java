@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.edu.bupt.wechatpost.model.Comment;
 import com.edu.bupt.wechatpost.model.LikeRelation;
 import com.edu.bupt.wechatpost.model.Post;
+import com.edu.bupt.wechatpost.model.ResponseMsg;
 import com.edu.bupt.wechatpost.service.DataService;
 import com.edu.bupt.wechatpost.service.PostCommentService;
 import com.edu.bupt.wechatpost.service.WxService;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/wechatPost")
 public class WechatPostController {
+
     @Autowired
     private PostCommentService postCommentService;
 
@@ -38,28 +40,22 @@ public class WechatPostController {
     private final static Logger logger = LoggerFactory.getLogger(WechatPostController.class);
 
 
-    @RequestMapping(value = "/findAllPosts", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject findAllPost(@RequestBody JSONObject message){
-        logger.info("查询消息...");
-        JSONObject result = new JSONObject();
+    @RequestMapping(value = "/findAllPosts", method = RequestMethod.GET)
+    public ResponseMsg<List<Post>> findAllPost(@RequestBody JSONObject message){
+
+        logger.info("查询所有用户消息...");
         String openId = message.getString("openId");
         Integer page = message.getInteger("page");
+
         try {
             List<Post> posts = postCommentService.findAllPosts(openId, page);
-            if (posts.size() != 0){
-                result.put("data", posts);
-            } else {
-                result.put("data",0);
-            }
-            logger.info("查询成功！");
-            return result;
+            logger.info("查询成功, 一共有{}条消息", posts.size());
+            return new ResponseMsg<>(1, "success", posts);
+
         } catch (Exception e){
-            e.printStackTrace();
-            result.put("errorMsg",e.getMessage());
-            result.put("data",0);
             logger.info("查询失败");
-            return result;
+            e.printStackTrace();
+            return new ResponseMsg<>(0, "exception", null);
         }
     }
 
