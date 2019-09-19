@@ -51,32 +51,37 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public void downloadImage(String imageName, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public void downloadImage(String imageName, HttpServletRequest request, HttpServletResponse response){
+
         logger.info("正在下载图片...");
-        if(!imageName.equals("")) {
-            FileInputStream is = null;
-            String imageUrl = imageBasePath + imageName;
-            try {
-                File imageFile = new File(imageUrl);
-                is = new FileInputStream(imageFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            if(is != null){
-                int length = is.available();
-                byte[] buffer = new byte[length];
-                try {
-                    is.read(buffer);
-                    is.close();
-                    OutputStream os = response.getOutputStream();
-                    os.write(buffer);
-                    os.close();
-                    logger.info("加载图片成功！");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    logger.info("加载图片失败\n" + e.getMessage());
-                }
-            }
+
+        if ("".equals(imageName)) {
+            logger.warn("图片名不能为空");
+        }
+
+        FileInputStream is = null;
+        String imageUrl = imageBasePath + imageName;
+        try {
+            File imageFile = new File(imageUrl);
+            is = new FileInputStream(imageFile);
+
+            int length = is.available();
+            byte[] buffer = new byte[length];
+
+            is.read(buffer);
+            is.close();
+            OutputStream os = response.getOutputStream();
+            os.write(buffer);
+            os.close();
+            logger.info("图片下载成功 {}", imageName);
+
+        } catch (FileNotFoundException e) {
+            logger.info("图片不存在");
+            e.printStackTrace();
+
+        } catch (IOException e){
+            e.printStackTrace();
+
         }
     }
 
