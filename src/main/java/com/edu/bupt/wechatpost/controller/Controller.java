@@ -12,9 +12,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("api/v1/controller")
 public class Controller {
-    private final String ACCOUNT_URL = "http://47.105.120.203:30080/api/v1/account/";
-    private final String RULER_URL = "http://47.105.120.203:30080/api/v1/smartruler/";
-    private static String DEVICEACCESS_URL = "http://47.105.120.203:30080/api/v1/deviceaccess/";
+    private final String ACCOUNT_URL = "http://47.105.120.203:8400/api/v1/account/";
+    private final String RULER_URL = "http://47.105.120.203:8200/api/v1/smartruler/";
+    private static String DEVICEACCESS_URL = "http://47.105.120.203:8100/api/v1/deviceaccess/";
     private static OkHttpClient client = new OkHttpClient();
 
 

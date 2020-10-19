@@ -37,7 +37,7 @@ public class ZigBeeController {
         // 调用deviceaccess接口删除cassandra数据库记录
         String urlPrefix = URLPREDIX;
         urlPrefix = urlPrefix.replace("ip","47.105.120.203")
-                .replace("port","30080");
+                .replace("port","8100");
         for(int i = 0; i < uuidList.size(); i++){
             // 删除mysql中设备关系表中的设备记录
             Request request = new Request.Builder()

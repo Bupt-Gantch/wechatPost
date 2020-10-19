@@ -12,7 +12,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("api/v1/servicemanagement")
 public class ServiceManagement {
-    private final static String BASEURL = "http://47.105.120.203:30080/api/v1/servicemanagement/";
+    private final static String BASEURL = "http://47.105.120.203:8000/api/v1/servicemanagement/";
 
     private final static OkHttpClient client = new OkHttpClient();
 

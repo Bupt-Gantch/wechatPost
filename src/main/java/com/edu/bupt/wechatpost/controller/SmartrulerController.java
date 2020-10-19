@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/smartruler")
 public class SmartrulerController {
-    private final String BASEURL = "http://47.105.120.203:30080/api/v1/smartruler/";
+    private final String BASEURL = "http://47.105.120.203:8200/api/v1/smartruler/";
     private static OkHttpClient client = new OkHttpClient();
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
